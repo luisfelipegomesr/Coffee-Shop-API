@@ -248,6 +248,94 @@ app.put("/usuarios/:id", (req, res) => {
     }
 });
 
+//parte dos pedidos
+
+app.get("/pedidos", (req, res) => {
+    try {
+        client.query("SELECT * FROM pedidos", function
+            (err, result) {
+            if (err) {
+                return console.error("Erro ao executar a qry de SELECT", err);
+            }
+            res.send(result.rows);
+            console.log("Chamou get pedidos");
+        });
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+app.get("/pedidos/:id", (req, res) => {
+    try {
+        console.log("Chamou /:id " + req.params.id);
+        client.query(
+            "SELECT * FROM pedidos WHERE id = $1",
+            [req.params.id],
+            function (err, result) {
+                if (err) {
+                    return console.error("Erro ao executar a qry de SELECT id", err);
+                }
+                if (result.rows.length == 0) {
+                    res.send("O pedido com o código: " + req.params.id + "não existe no banco de dados.")
+                }
+                else {
+                    res.send(result.rows);
+                    //console.log(result);
+                }
+            }
+        );
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+app.post("/pedidos", (req, res) => {
+    try {
+        console.log("Alguém enviou um post com os dados:", req.body);
+        const { NomeCliente, NomeProduto } = req.body;
+        client.query(
+            "INSERT INTO pedidos (NomeCliente, NomeProduto) VALUES ($1, $2) RETURNING * ",
+            [NomeCliente, NomeProduto],
+            function (err, result) {
+                if (err) {
+                    return console.error("Erro ao executar a qry de INSERT", err);
+                }
+                const { id } = result.rows[0];
+                res.setHeader("id", `${id}`);
+                res.status(201).json(result.rows[0]);
+                console.log(result);
+            }
+        );
+    } catch (erro) {
+        console.error(erro);
+    }
+});
+
+app.delete("/pedidos/:id", (req, res) => {
+    try {
+        console.log("Chamou delete /:id " + req.params.id);
+        const id = req.params.id;
+        client.query(
+            "DELETE FROM pedidos WHERE id = $1",
+            [id],
+            function (err, result) {
+                if (err) {
+                    return console.error("Erro ao executar a qry de DELETE", err);
+                } else {
+                    if (result.rowCount == 0) {
+                        res.status(404).json({ info: "Registro não encontrado." });
+                    } else {
+                        res.status(200).json({ info: `Registro excluído. Código: ${id}` });
+                    }
+                }
+                console.log(result);
+            }
+        );
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 app.listen(config.port, () =>
     console.log("Servidor funcionando na porta " + config.port)
 );
