@@ -269,7 +269,7 @@ app.get("/pedidos/:id", (req, res) => {
     try {
         console.log("Chamou /:id " + req.params.id);
         client.query(
-            "SELECT * FROM pedidos WHERE id = $1",
+            "SELECT * FROM pedidos WHERE pedidoid = $1",
             [req.params.id],
             function (err, result) {
                 if (err) {
