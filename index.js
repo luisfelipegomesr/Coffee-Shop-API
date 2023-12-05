@@ -292,10 +292,10 @@ app.get("/pedidos/:id", (req, res) => {
 app.post("/pedidos", (req, res) => {
     try {
         console.log("Alguém enviou um post com os dados:", req.body);
-        const { NomeCliente, NomeProduto } = req.body;
+        const { nomecliente, nomeproduto } = req.body;
         client.query(
-            "INSERT INTO pedidos (NomeCliente, NomeProduto) VALUES ($1, $2) RETURNING * ",
-            [NomeCliente, NomeProduto],
+            "INSERT INTO pedidos (nomecliente, nomeproduto) VALUES ($1, $2) RETURNING * ",
+            [nomecliente, nomeproduto],
             function (err, result) {
                 if (err) {
                     return console.error("Erro ao executar a qry de INSERT", err);
