@@ -316,7 +316,7 @@ app.delete("/pedidos/:id", (req, res) => {
         console.log("Chamou delete /:id " + req.params.id);
         const id = req.params.id;
         client.query(
-            "DELETE FROM pedidos WHERE id = $1",
+            "DELETE FROM pedidos WHERE pedidoid = $1",
             [id],
             function (err, result) {
                 if (err) {
